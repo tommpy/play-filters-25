@@ -40,10 +40,8 @@ object HmrcBuild extends Build {
 
 private object AppDependencies {
 
-  import play.core.PlayVersion
-
   val compile = Seq(
-    "com.typesafe.play" %% "play" % PlayVersion.current % "provided",
+    "com.typesafe.play" %% "play" % "2.5.3" % "provided",
     "uk.gov.hmrc" %% "play-auditing" % "1.5.1"
   )
 
@@ -55,7 +53,7 @@ private object AppDependencies {
   object Test {
     def apply() = new TestDependencies {
       override lazy val test = Seq(
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+        "com.typesafe.play" %% "play-test" % "2.5.3" % scope,
         "org.scalatest" %% "scalatest" % "2.2.4" % scope,
         "org.scalactic" %% "scalactic" % "2.2.2" % scope,
         "uk.gov.hmrc" %% "hmrctest" % "1.4.0" % scope,

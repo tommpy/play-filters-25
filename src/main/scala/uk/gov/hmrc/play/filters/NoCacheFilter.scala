@@ -16,12 +16,17 @@
 
 package uk.gov.hmrc.play.filters
 
+import javax.inject.Singleton
+
+import akka.stream.Materializer
+import com.google.inject.Inject
 import play.api.mvc.{Result, RequestHeader, Filter}
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 import play.mvc.Http.HeaderNames
 
-object NoCacheFilter extends Filter {
+@Singleton
+class NoCacheFilter @Inject() (implicit override val mat: Materializer, exec: ExecutionContext) extends Filter {
 
   private val NoCache = "no-cache,no-store,max-age=0"
 

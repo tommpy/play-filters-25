@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.play.filters
 
-import play.api.mvc.{Filter, RequestHeader, Result}
+import play.api.mvc.{EssentialFilter, Filter, RequestHeader, Result}
 import play.api.{Logger, Play}
 import play.mvc.Http.{HeaderNames, Status}
 
@@ -24,7 +24,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class CacheControlFilter extends Filter {
+abstract class CacheControlFilter extends EssentialFilter {
   val cachableContentTypes: Seq[String]
 
   final def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
@@ -43,7 +43,7 @@ object CacheControlFilter {
   def fromConfig(configKey: String) = {
     new CacheControlFilter {
       override lazy val cachableContentTypes = {
-        val c = Play.current.configuration.getStringList(configKey).toList.map(_.asScala).flatten
+        val c = Play.current.configuration.getStringList(configKey).toList.flatMap(_.asScala)
         Logger.info(s"Will allow caching of content types matching: ${c.mkString(", ")}")
         c
       }

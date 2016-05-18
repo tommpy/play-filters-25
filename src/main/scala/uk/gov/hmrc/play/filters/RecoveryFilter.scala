@@ -16,14 +16,20 @@
 
 package uk.gov.hmrc.play.filters
 
+import javax.inject.Singleton
+
+import akka.stream.Materializer
+import com.google.inject.Inject
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee._
 import uk.gov.hmrc.play.http.HttpException
 import play.api.http.Status._
 
+import scala.concurrent.ExecutionContext
 
-object RecoveryFilter extends EssentialFilter with Results {
+@Singleton
+class RecoveryFilter @Inject() (implicit override val mat: Materializer, exec: ExecutionContext) extends Filter with Results {
   override def apply(next: EssentialAction): EssentialAction = new EssentialAction  {
       def apply(rh: RequestHeader): Iteratee[Array[Byte], Result] = {
         Iteratee.flatten(next(rh).unflatten.map(_.it).recover(recoverErrors))
