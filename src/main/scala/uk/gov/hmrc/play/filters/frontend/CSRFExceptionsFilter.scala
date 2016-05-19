@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.filters.frontend.SessionTimeoutWrapper._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CSRFExceptionsFilter @Inject() (implicit override val mat: Materializer, exec: ExecutionContext) extends Filter {
+class CSRFExceptionsFilter @Inject() (implicit override val mat: Materializer) extends Filter {
 
   val whitelist = List("/ida/login", "/ssoin", "/contact/problem_reports")
 

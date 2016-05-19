@@ -27,7 +27,8 @@ import play.api.http.Status._
 
 
 @Singleton
-class RecoveryFilter  extends EssentialFilter with Results {
+class RecoveryFilter()  extends EssentialFilter with Results {
+
   override def apply(next: EssentialAction): EssentialAction = new EssentialAction  {
       def apply(rh: RequestHeader): Accumulator[ByteString, Result]  = {
         next(rh).recover(recoverErrors)

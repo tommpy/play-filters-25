@@ -44,7 +44,7 @@ trait CookieCryptoFilter extends Filter {
     if (updatedCookies.isEmpty)
       rh.copy(headers = rh.headers.remove( HeaderNames.COOKIE))
     else
-      rh.copy(headers = rh.headers.add(HeaderNames.COOKIE -> Cookies.encodeCookieHeader(updatedCookies)))
+      rh.copy(headers = rh.headers.replace(HeaderNames.COOKIE -> Cookies.encodeCookieHeader(updatedCookies)))
   }
 
     def tryDecrypting(value: String): Option[String] = Try(decrypter(value)) match {

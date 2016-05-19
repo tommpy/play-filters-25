@@ -29,6 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait DeviceIdFilter extends Filter with DeviceIdCookie {
 
+
   def auditConnector: AuditConnector
   def appName: String
 

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.play.filters.frontend
 
+import akka.stream.Materializer
 import org.mockito.{Mockito, ArgumentCaptor}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -24,7 +25,7 @@ import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc._
-import play.api.test.{FakeApplication, FakeRequest}
+import play.api.test.{WithApplication, FakeApplication, FakeRequest}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.{EventTypes, DataEvent}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -52,20 +53,22 @@ class DeviceIdFilterSpec extends UnitSpec with WithFakeApplication with ScalaFut
       mockAction
     }
 
-    lazy val filter = new DeviceIdFilter {
-      lazy val mdtpCookie = super.buildNewDeviceIdCookie()
+	class DiverIdTestFilter(override val mat: Materializer = mock[Materializer]) extends DeviceIdFilter {
+		lazy val mdtpCookie = super.buildNewDeviceIdCookie()
 
-      override def getTimeStamp = timestamp
+		override def getTimeStamp = timestamp
 
-      override def buildNewDeviceIdCookie() = mdtpCookie
+		override def buildNewDeviceIdCookie() = mdtpCookie
 
-      override val secret = "SOME_SECRET"
-      override val previousSecrets = Seq("previous_key_1", "previous_key_2")
+		override val secret = "SOME_SECRET"
+		override val previousSecrets = Seq("previous_key_1", "previous_key_2")
 
-      override val appName = "SomeAppName"
+		override val appName = "SomeAppName"
 
-      lazy val auditConnector = mock[AuditConnector]
-    }
+		lazy val auditConnector = mock[AuditConnector]
+	}
+
+    lazy val filter = new DiverIdTestFilter()
 
     lazy val newFormatGoodCookieDeviceId = filter.mdtpCookie
 

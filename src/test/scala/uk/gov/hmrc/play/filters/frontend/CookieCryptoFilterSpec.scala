@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.play.filters.frontend
 
+import akka.stream.Materializer
 import ch.qos.logback.classic.Level
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers._
@@ -56,6 +57,7 @@ class CookieCryptoFilterSpec extends UnitSpec with ScalaFutures with Matchers wi
     }
 
     def filter = new CookieCryptoFilter {
+	  override val mat = mock[Materializer]
       override val cookieName = Setup.this.cookieName
       protected val encrypter = encrypt _
       protected val decrypter = decrypt _

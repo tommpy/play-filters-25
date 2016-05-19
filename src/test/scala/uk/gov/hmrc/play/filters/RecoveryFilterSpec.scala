@@ -16,10 +16,15 @@
 
 package uk.gov.hmrc.play.filters
 
+import java.security.cert.X509Certificate
+
+import akka.util.ByteString
 import org.scalatest.{Matchers, WordSpecLike}
 import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.streams.Accumulator
 import play.api.mvc.{Headers, RequestHeader, Action, EssentialAction}
 import play.api.test.{FakeHeaders, WithApplication}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.http.{HttpException, NotFoundException}
 import scala.concurrent.Future
 
@@ -32,7 +37,7 @@ class RecoveryFilterSpec extends WordSpecLike with Matchers with ScalaFutures {
         request =>
           Action.async(Future.failed(new NotFoundException("Not found exception")))(request)
       }
-      val fResult = RecoveryFilter(action)(new DummyRequestHeader).run.futureValue
+      val fResult = new RecoveryFilter()(action)(new DummyRequestHeader).run().futureValue
       fResult.header.status shouldBe 404
     }
 
@@ -41,7 +46,7 @@ class RecoveryFilterSpec extends WordSpecLike with Matchers with ScalaFutures {
         request =>
           Action.async(Future.failed(new HttpException("Internal server error", 500)))(request)
       }
-      val fResult = RecoveryFilter(action)(new DummyRequestHeader).run
+      val fResult = new RecoveryFilter()(action)(new DummyRequestHeader).run
       whenReady(fResult.failed) { ex =>
         ex shouldBe a [HttpException]
       }
@@ -71,4 +76,6 @@ class DummyRequestHeader extends RequestHeader {
   override def id: Long = ???
 
   override def secure: Boolean = false
+
+	override def clientCertificateChain: Option[Seq[X509Certificate]] = ???
 }

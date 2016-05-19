@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.play.filters
 
+import akka.stream.Materializer
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -29,6 +30,8 @@ import play.api.test.{FakeApplication, _}
 import scala.concurrent.Future
 
 class CacheControlFilterSpec extends WordSpecLike with Matchers with MockitoSugar with ScalaFutures {
+
+	implicit val mat : Materializer = mock[Materializer]
 
   private trait Setup extends Results {
 

@@ -1,9 +1,9 @@
-import play.api.libs.iteratee._
+case class Container[+T](t: T){
 
-val enumerator = Enumerator(0 to 10)
+	def apply(i: Int) : T = t
+}
 
-val res = enumerator.run(Iteratee.foreach(_.toString))
 
-val itree = Iteratee.foreach[Int](_.toString)
+val c = Container("Hello")
 
-val step = itree.unflatten.map(_.it)
+c(0)

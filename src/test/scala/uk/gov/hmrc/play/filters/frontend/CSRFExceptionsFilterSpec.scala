@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.play.filters.frontend
 
+import akka.stream.Materializer
 import org.joda.time.{DateTime, DateTimeZone}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, WordSpecLike}
@@ -23,6 +24,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{WithApplication, FakeHeaders, FakeRequest}
 
 class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSugar {
+
 
   private val now = () =>  DateTime.now().withZone(DateTimeZone.UTC)
 
@@ -32,7 +34,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
       val validTime = now().minusSeconds(SessionTimeoutWrapper.timeoutSeconds/2).getMillis.toString
       val rh = FakeRequest("POST", "/something", FakeHeaders(), AnyContentAsEmpty).withSession("ts" -> validTime)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh, now)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh, now)
 
       requestHeader.headers.get("Csrf-Token") shouldBe None
     }
@@ -40,7 +42,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
     "do nothing for GET requests" in new WithApplication {
       val rh = FakeRequest("GET", "/ida/login", FakeHeaders(), AnyContentAsEmpty)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh)
 
       requestHeader.headers.get("Csrf-Token") shouldBe None
     }
@@ -48,7 +50,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
     "add Csrf-Token header with value nocheck to bypass validation for ida/login POST request" in new WithApplication {
       val rh = FakeRequest("POST", "/ida/login", FakeHeaders(), AnyContentAsEmpty)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh)
 
       requestHeader.headers("Csrf-Token") shouldBe "nocheck"
     }
@@ -56,7 +58,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
     "add Csrf-Token header with value nocheck to bypass validation for SSO POST request" in new WithApplication {
       val rh = FakeRequest("POST", "/ssoin", FakeHeaders(), AnyContentAsEmpty)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh)
 
       requestHeader.headers("Csrf-Token") shouldBe "nocheck"
     }
@@ -64,7 +66,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
     "add Csrf-Token header with value nocheck to bypass validation of posting using cached HTML partial for error reporting" in new WithApplication {
       val rh = FakeRequest("POST", "/contact/problem_reports", FakeHeaders(), AnyContentAsEmpty)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh)
 
       requestHeader.headers("Csrf-Token") shouldBe "nocheck"
     }
@@ -73,7 +75,7 @@ class CSRFExceptionsFilterSpec extends WordSpecLike with Matchers with MockitoSu
       val invalidTime = new DateTime(2012, 7, 7, 4, 6, 20, DateTimeZone.UTC).minusDays(1).getMillis.toString
       val rh = FakeRequest("POST", "/some/post", FakeHeaders(), AnyContentAsEmpty).withSession("ts" -> invalidTime)
 
-      val requestHeader = CSRFExceptionsFilter.filteredHeaders(rh, now)
+      val requestHeader = new CSRFExceptionsFilter().filteredHeaders(rh, now)
 
       requestHeader.headers("Csrf-Token") shouldBe "nocheck"
     }
