@@ -77,5 +77,5 @@ class DummyRequestHeader extends RequestHeader {
 
   override def secure: Boolean = false
 
-	override def clientCertificateChain: Option[Seq[X509Certificate]] = ???
+	override def clientCertificateChain: Option[Seq[X509Certificate]] = None
 }
