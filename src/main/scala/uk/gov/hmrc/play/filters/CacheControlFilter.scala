@@ -31,7 +31,7 @@ abstract class CacheControlFilter(implicit override val mat: Materializer) exten
 
   final def apply(next: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     next(rh).map(r =>
-      (r.header.status, r.header.headers.get(HeaderNames.CONTENT_TYPE)) match {
+      (r.header.status, r.body.contentType) match {
         case (Status.NOT_MODIFIED, _) => r
         case (_, Some(contentType)) if cachableContentTypes.exists(contentType.startsWith) => r
         case _ => r.withHeaders(HeaderNames.CACHE_CONTROL -> "no-cache,no-store,max-age=0")
