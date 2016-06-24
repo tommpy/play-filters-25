@@ -41,6 +41,11 @@ class DeviceIdFilterSpec extends UnitSpec with WithFakeApplication with ScalaFut
 
   lazy val timestamp = System.currentTimeMillis()
 
+  override def afterAll() {
+    //Hacking this out to stop it called Play.stop()
+    //This'll be fixed when we move to the new version of hmrctest
+  }
+
   private trait Setup extends Results {
     val normalCookie = Cookie("AnotherCookie1", "normalValue1")
 
@@ -214,7 +219,7 @@ class DeviceIdFilterSpec extends UnitSpec with WithFakeApplication with ScalaFut
         val fields = deviceId.value.split(DeviceId.Token1)
         val time: Array[String] = fields(2).split(DeviceId.Token2)
 
-        Cookie(DeviceId.MdtpDeviceId, deviceId.value.replace(time(0),"BAD TIME"), Some(DeviceId.TenYears))
+        Cookie(DeviceId.MdtpDeviceId, deviceId.value.replace(time(0),"BAD_TIME"), Some(DeviceId.TenYears))
       }
 
       val result = invokeFilter(Seq(newFormatBadCookieDeviceId), newFormatGoodCookieDeviceId)

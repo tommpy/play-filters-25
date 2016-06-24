@@ -146,7 +146,7 @@ class CookieCryptoFilterSpec extends UnitSpec with ScalaFutures with Matchers wi
 
     "encrypt the cookie value before returning it, leaving other cookies unchanged" in new Setup {
       override val resultFromAction = Ok.withCookies(normalCookie1, unencryptedCookie, normalCookie2)
-      filter(action)(FakeRequest()).futureValue should be(Ok.withCookies(normalCookie1, normalCookie2, encryptedCookie))
+      filter(action)(FakeRequest()).futureValue should be(Ok.withCookies(normalCookie1, encryptedCookie, normalCookie2))
     }
 
     "do nothing with the cookie value if it is empty" in new Setup {

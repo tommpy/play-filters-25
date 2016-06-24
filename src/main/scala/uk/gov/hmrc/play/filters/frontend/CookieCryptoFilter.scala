@@ -67,10 +67,14 @@ trait CookieCryptoFilter extends Filter {
     result =>
       val updatedHeader: Option[String] = result.header.headers.get(HeaderNames.SET_COOKIE).map {
         cookieHeader =>
-          Cookies.encodeCookieHeader(Cookies.decodeCookieHeader(cookieHeader).map {
-            case cookie if shouldBeEncrypted(cookie) => cookie.copy(value = encrypter(cookie.value))
-            case other => other
+          val foo = Cookies.encodeSetCookieHeader(Cookies.decodeSetCookieHeader(cookieHeader).map { cookie: Cookie =>
+            if (shouldBeEncrypted(cookie))
+              cookie.copy(value = encrypter(cookie.value))
+            else
+              cookie
           })
+
+          foo
       }
 
       updatedHeader.map(header => result.withHeaders(HeaderNames.SET_COOKIE -> header)).getOrElse(result)
